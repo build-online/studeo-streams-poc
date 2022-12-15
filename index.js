@@ -22,6 +22,7 @@ const logger = winston.createLogger({
 
 
 app.get('/', (req, res) => {
+  console.log("ROOT MAIN");
   res.send('Hello World!')
 })
 
