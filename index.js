@@ -2,6 +2,25 @@ const express = require('express')
 const app = express()
 const port = 3000
 
+const os = require('os');
+const winston = require('winston');
+require('winston-syslog');
+
+const papertrail = new winston.transports.Syslog({
+  host: 'logs4.papertrailapp.com',
+  port: 25695,
+  protocol: 'tls4',
+  localhost: os.hostname(),
+  eol: '\n',
+});
+
+const logger = winston.createLogger({
+  format: winston.format.simple(),
+  levels: winston.config.syslog.levels,
+  transports: [papertrail],
+});
+
+
 app.get('/', (req, res) => {
   res.send('Hello World!')
 })
@@ -15,7 +34,7 @@ app.get('/episodes/:filename', (req, res, next) => {
   const https = require('https');
   const filename = req.params.filename;
   const path = `public/episodes/${filename}`;
-  console.log(`--`);
+  logger.info(`--`);
   // console.log(`FILENAME: ${filename}`);
 
   // if (!fs.existsSync(path)) {
@@ -43,18 +62,19 @@ app.get('/episodes/:filename', (req, res, next) => {
   // console.log('Sigue');
 
   if (req && req.headers && req.headers.range) {
-    console.log(`time: ${Date()}`);
-    console.log("HEADERS RANGE", req.headers.range);
+    logger.info(`time: ${Date()}`);
+    // console.log(`time: ${Date()}`);
+    logger.info("HEADERS RANGE", req.headers.range);
     const range = req.headers.range;
     const ranges = range.substring(range.indexOf('=') + 1).split('-');
     if (ranges.length) {
       const start = ranges[0];
       const end = ranges[1];
-      console.log('start:', start);
-      console.log('end:', end);
+      logger.info('start:', start);
+      logger.info('end:', end);
     }
   } else {
-    console.log('no entra')
+    logger.info('no entra')
   }
     // res.send(req.params)
     next();
@@ -72,7 +92,9 @@ app.get('/episodes/:filename', (req, res, next) => {
 //   next();
 // }
 
-app.use(express.static('public'))
+// app.use(express.static('public'))
+const path = require('path');
+app.use(express.static(path.join(__dirname, "public")));
 
 // var pollTime = 1000;
 // module.exports = function (req, res, next) {
