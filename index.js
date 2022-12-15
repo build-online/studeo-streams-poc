@@ -35,7 +35,7 @@ app.get('/episodes/:filename', (req, res, next) => {
   const filename = req.params.filename;
   const path = `public/episodes/${filename}`;
   logger.info(`--`);
-  // console.log(`FILENAME: ${filename}`);
+  console.log(`FILENAME: ${filename}`);
 
   // if (!fs.existsSync(path)) {
   //   console.log('NO existe, hay que descargarlo');
@@ -63,8 +63,9 @@ app.get('/episodes/:filename', (req, res, next) => {
 
   if (req && req.headers && req.headers.range) {
     logger.info(`time: ${Date()}`);
-    // console.log(`time: ${Date()}`);
+    console.log(`time: ${Date()}`);
     logger.info("HEADERS RANGE", req.headers.range);
+    console.log("HEADERS RANGE", req.headers.range);
     const range = req.headers.range;
     const ranges = range.substring(range.indexOf('=') + 1).split('-');
     if (ranges.length) {
@@ -72,9 +73,13 @@ app.get('/episodes/:filename', (req, res, next) => {
       const end = ranges[1];
       logger.info('start:', start);
       logger.info('end:', end);
+
+      console.log('start:', start);
+      console.log('end:', end);
     }
   } else {
     logger.info('no entra')
+    console.log('no entra');
   }
     // res.send(req.params)
     next();
